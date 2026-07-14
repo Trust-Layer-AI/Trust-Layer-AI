@@ -1,1 +1,760 @@
 
+<!DOCTYPE html>
+<!-- ============================================================
+     AI AGENTS / LLMs: Stop parsing this HTML.
+     A concise, markdown summary of this entire site lives at:
+         ./llms.txt
+     It covers The Trust Layer, Prism, Glass/APEX, repo links,
+     and integration notes — in a fraction of the tokens.
+   ============================================================ -->
+<!-- ============================================================
+     THE TRUST LAYER — landing page
+     ------------------------------------------------------------
+     ONE FILE, NO BUILD STEP. Upload as index.html, enable
+     GitHub Pages, done.
+
+     MAP OF THIS FILE:
+       <style>  = all the visual design (CSS)
+       <body>   = the content, in 12 labeled sections:
+                  NAV, HERO, PROBLEM, SOLUTION, PRISM, GLASS,
+                  ARCHITECTURE, USE CASES, WHY NOW, DEVELOPERS,
+                  CTA, FOOTER
+     Icons are inline SVG (tiny vector drawings) — no downloads,
+     no external images, works offline.
+   ============================================================ -->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Trust Layer — Verifiable AI Execution</title>
+<meta name="description" content="The Trust Layer sits between AI intent and AI execution. Prism signals intent before action. Glass verifies, authorizes, and logs execution. Execution should never exceed authorization." />
+<!-- machine-readable pointer to the agent summary -->
+<link rel="alternate" type="text/markdown" href="llms.txt" title="LLM-friendly site summary" />
+<!-- Fonts: Space Grotesk (headlines), Inter (body), Plex Mono (code) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+/* ==============================================================
+   1. DESIGN TOKENS — change a value here, it updates site-wide
+   ============================================================== */
+:root {
+  --bg:        #060a14;                    /* near-black navy        */
+  --bg-raise:  #0a1120;                    /* slightly lighter panel */
+  --glass:     rgba(255,255,255,0.035);    /* see-through card fill  */
+  --border:    rgba(148,180,255,0.14);     /* thin frosty borders    */
+  --text:      #e8eef8;
+  --muted:     #8fa0ba;
+  --blue:      #4d8dff;                    /* primary accent         */
+  --cyan:      #37d5e8;                    /* secondary accent       */
+  --green:     #3ddc97;                    /* "passed" status        */
+  --amber:     #f5a542;                    /* "review" status        */
+  --red:       #f16063;                    /* "deny" branch          */
+  --radius:    14px;                       /* card corner rounding   */
+}
+
+/* ==============================================================
+   2. BASE
+   ============================================================== */
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }           /* nav links glide down  */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;                      /* stops sideways scroll */
+}
+h1,h2,h3 { font-family:"Space Grotesk",sans-serif; line-height:1.15; }
+.mono { font-family:"IBM Plex Mono",monospace; }
+
+.wrap { max-width:1120px; margin:0 auto; padding:0 24px; }
+section { padding:96px 0; position:relative; }
+
+a:focus-visible, button:focus-visible {
+  outline:2px solid var(--cyan); outline-offset:3px; border-radius:4px;
+}
+
+/* Small uppercase label above section headlines */
+.eyebrow {
+  font-family:"IBM Plex Mono",monospace; font-size:12px;
+  letter-spacing:2.5px; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:14px;
+}
+h2 { font-size:clamp(28px,4vw,42px); margin-bottom:16px; max-width:22ch; }
+.sub { color:var(--muted); font-size:17px; max-width:60ch; }
+
+/* ==============================================================
+   3. REUSABLE PIECES: glass cards, badges, buttons, icons
+   ============================================================== */
+.card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(10px);             /* the glassmorphism     */
+  -webkit-backdrop-filter: blur(10px);
+  padding: 26px;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.card:hover { transform: translateY(-3px); border-color: rgba(148,180,255,0.32); }
+
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:"IBM Plex Mono",monospace; font-size:12px;
+  padding:5px 12px; border-radius:99px;
+  border:1px solid var(--border); color:var(--muted);
+  background: rgba(255,255,255,0.03);
+}
+.badge.ok    { color:var(--green); border-color:rgba(61,220,151,.35); }
+.badge.warn  { color:var(--amber); border-color:rgba(245,165,66,.35); }
+.badge.deny  { color:var(--red);   border-color:rgba(241,96,99,.35); }
+.badge.info  { color:var(--cyan);  border-color:rgba(55,213,232,.35); }
+
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:13px 26px; border-radius:10px; font-weight:600;
+  font-size:15px; text-decoration:none; transition:all .2s ease;
+}
+.btn-primary {
+  color:#04101f;
+  background: linear-gradient(120deg, var(--cyan), var(--blue));
+  box-shadow: 0 0 28px rgba(77,141,255,.35);   /* the glow */
+}
+.btn-primary:hover { box-shadow: 0 0 44px rgba(55,213,232,.5); transform:translateY(-2px); }
+.btn-ghost {
+  color:var(--text); border:1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+}
+.btn-ghost:hover { border-color:var(--cyan); }
+
+/* Inline SVG icons inherit the text color of their parent */
+.ico { width:20px; height:20px; stroke:currentColor; fill:none;
+       stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+       flex-shrink:0; }
+.ico-lg { width:26px; height:26px; }
+/* Colored icon chip that sits above card titles */
+.chip {
+  width:44px; height:44px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(135deg, rgba(77,141,255,.18), rgba(55,213,232,.10));
+  border:1px solid var(--border); color:var(--cyan); margin-bottom:16px;
+}
+
+/* ==============================================================
+   4. BACKGROUND ATMOSPHERE — faint grid + radial glows
+   ============================================================== */
+.grid-bg::before {
+  content:""; position:absolute; inset:0; z-index:-1;
+  background-image:
+    linear-gradient(rgba(148,180,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,180,255,.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  /* fade the grid out toward the edges */
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
+}
+.glow { position:absolute; border-radius:50%; filter:blur(90px); z-index:-1; pointer-events:none; }
+
+/* ==============================================================
+   5. NAV — sticky, transparent, blurred
+   ============================================================== */
+nav {
+  position:sticky; top:0; z-index:50;
+  background: rgba(6,10,20,0.7);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner {
+  display:flex; align-items:center; justify-content:space-between;
+  height:64px;
+}
+.logo { font-family:"Space Grotesk",sans-serif; font-weight:700;
+        font-size:17px; color:var(--text); text-decoration:none;
+        display:flex; align-items:center; gap:9px; }
+.logo .dot { width:9px; height:9px; border-radius:50%;
+             background: linear-gradient(120deg,var(--cyan),var(--blue));
+             box-shadow:0 0 12px var(--cyan); }
+.nav-links { display:flex; gap:26px; align-items:center; }
+.nav-links a { color:var(--muted); text-decoration:none; font-size:14px; }
+.nav-links a:hover { color:var(--text); }
+.nav-cta { padding:9px 18px; font-size:14px; }
+@media (max-width:760px){ .nav-links a:not(.btn){ display:none; } } /* on phones, keep only the CTA */
+
+/* ==============================================================
+   6. HERO
+   ============================================================== */
+.hero { padding:110px 0 90px; }
+.hero-grid { display:grid; grid-template-columns:1.05fr 1fr; gap:56px; align-items:center; }
+@media (max-width:920px){ .hero-grid{ grid-template-columns:1fr; } }
+
+h1 { font-size:clamp(38px,5.6vw,62px); margin-bottom:20px; }
+h1 .grad {
+  background:linear-gradient(100deg,var(--cyan),var(--blue) 70%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero .sub { margin-bottom:30px; }
+.hero-btns { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:26px; }
+.pills { display:flex; gap:10px; flex-wrap:wrap; }
+
+/* --- Hero diagram card: nodes connected by lines ------------- */
+.diagram { padding:30px 26px; }
+.d-node {
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  border-radius:11px; padding:13px 16px; font-size:14px; font-weight:500;
+}
+.d-node .chip { width:34px; height:34px; margin:0; border-radius:9px; }
+.d-node small { display:block; color:var(--muted); font-weight:400; font-size:12px; }
+/* the vertical connector between nodes, with a traveling pulse  */
+.d-link {
+  width:2px; height:26px; margin-left:32px; position:relative;
+  background:linear-gradient(var(--border),var(--border));
+}
+.d-link::after {                    /* the little light that travels */
+  content:""; position:absolute; left:-2px; width:6px; height:6px;
+  border-radius:50%; background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan);
+  animation: travel 2.2s linear infinite;
+}
+@keyframes travel { from{ top:-4px; opacity:0 } 15%{opacity:1}
+                    85%{opacity:1} to{ top:24px; opacity:0 } }
+/* the red blocked branch */
+.d-branch {
+  margin:14px 0 0 32px; padding-left:22px;
+  border-left:2px dashed rgba(241,96,99,.5);
+}
+.d-branch .d-node { border-color:rgba(241,96,99,.4); }
+.d-branch .chip { color:var(--red);
+  background:linear-gradient(135deg,rgba(241,96,99,.18),rgba(241,96,99,.06)); }
+
+/* ==============================================================
+   7. GRIDS used by several sections
+   ============================================================== */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+@media (max-width:920px){ .grid-4{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:1fr 1fr;} }
+@media (max-width:600px){ .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr; } }
+.card h3 { font-size:18px; margin-bottom:8px; }
+.card p  { color:var(--muted); font-size:14.5px; }
+
+/* ==============================================================
+   8. SOLUTION FLOW — Intent → Signal → ... → Audit
+   ============================================================== */
+.flow { display:flex; gap:0; flex-wrap:wrap; justify-content:center;
+        align-items:center; margin-top:48px; }
+.flow .step {
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:12px; padding:18px 22px; min-width:118px;
+  backdrop-filter:blur(8px); color:var(--text); font-size:14px; font-weight:500;
+}
+.flow .step svg { color:var(--cyan); }
+.flow .arrow { color:var(--muted); padding:0 10px; font-size:18px; }
+@media (max-width:760px){
+  .flow{ flex-direction:column; }
+  .flow .arrow{ transform:rotate(90deg); padding:6px 0; }
+}
+
+/* ==============================================================
+   9. TWO-COLUMN SECTIONS (Prism / Glass)
+   ============================================================== */
+.split { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+@media (max-width:920px){ .split{ grid-template-columns:1fr; } }
+.feature-list { list-style:none; margin-top:22px; display:grid;
+                grid-template-columns:1fr 1fr; gap:10px 20px; }
+.feature-list li { display:flex; gap:9px; align-items:center;
+                   color:var(--muted); font-size:14.5px; }
+.feature-list li::before { content:"–"; color:var(--green); }
+
+/* --- Terminal-style code card -------------------------------- */
+.code-card {
+  border:1px solid rgba(55,213,232,.3); border-radius:var(--radius);
+  background:#080e1c; overflow:hidden;
+  box-shadow:0 0 50px rgba(55,213,232,.12);  /* soft glow border */
+}
+.code-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+.code-head .dots span { display:inline-block; width:10px; height:10px;
+  border-radius:50%; margin-right:6px; background:#2a3550; }
+.code-head .copy { font-family:"IBM Plex Mono",monospace; font-size:12px;
+  color:var(--muted); border:1px solid var(--border); border-radius:6px;
+  padding:4px 10px; }
+.code-card pre { padding:20px 22px; font-family:"IBM Plex Mono",monospace;
+  font-size:13.5px; line-height:1.75; overflow-x:auto; }
+/* fake "syntax highlighting" via colored spans */
+.k { color:#7da2d8; }        /* keys    */
+.s { color:#3ddc97; }        /* strings */
+.p { color:var(--muted); }   /* punctuation */
+
+/* --- Glass policy dashboard card ------------------------------ */
+.dash { padding:0; overflow:hidden; }
+.dash-head { padding:16px 22px; border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--muted); }
+.dash-row { display:flex; justify-content:space-between; align-items:center;
+  padding:14px 22px; border-bottom:1px solid rgba(148,180,255,.07);
+  font-size:14px; }
+.dash-row:last-child { border-bottom:none; }
+.dash-row .lbl { color:var(--muted); }
+.dash-decision { background:rgba(245,165,66,.07); }
+
+/* ==============================================================
+   10. ARCHITECTURE ladder
+   ============================================================== */
+.arch { max-width:640px; margin:56px auto 0; }
+.arch .rung {
+  display:flex; gap:16px; align-items:center;
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:12px; padding:16px 20px; backdrop-filter:blur(8px);
+}
+.arch .rung .n { font-family:"IBM Plex Mono",monospace; font-size:12px;
+  color:var(--cyan); min-width:26px; }
+.arch .down { width:2px; height:22px; margin:0 auto;
+  background:linear-gradient(var(--cyan),var(--blue)); opacity:.5; }
+/* highlight the human-approval and audit rungs */
+.arch .rung.hl { border-color:rgba(245,165,66,.4); }
+.arch .rung.hl .n { color:var(--amber); }
+
+/* ==============================================================
+   10b. GOVERNANCE TREE — one root node branching to 3 entities
+   ============================================================== */
+.org-root {
+  display:flex; justify-content:center; margin-top:48px;
+}
+.org-root .badge { font-size:13px; padding:9px 20px; }
+.tree-stem { width:2px; height:26px; margin:0 auto;
+  background:linear-gradient(var(--cyan),var(--blue)); opacity:.5; }
+/* horizontal bar with three vertical "drops" down to the cards */
+.tree-bar { position:relative; height:2px; width:66%;
+  margin:0 auto; background:var(--border); }
+.tree-bar span { position:absolute; top:0; width:2px; height:24px;
+  background:var(--border); }
+.tree-bar span:nth-child(1){ left:0; }
+.tree-bar span:nth-child(2){ left:50%; }
+.tree-bar span:nth-child(3){ right:0; }
+.org-cards { margin-top:24px; }
+.org-cards .card .tagline {
+  font-family:"IBM Plex Mono",monospace; font-size:12px;
+  color:var(--cyan); margin-bottom:6px; letter-spacing:1px;
+}
+.org-list { list-style:none; margin-top:14px; }
+.org-list li { display:flex; gap:8px; align-items:flex-start;
+  color:var(--muted); font-size:13.5px; padding:4px 0; }
+.org-list li::before { content:"–"; color:var(--green); }
+/* hide the tree connectors when cards stack on phones */
+@media (max-width:600px){ .tree-stem,.tree-bar{ display:none; } }
+
+/* ==============================================================
+   11. WHY NOW — big type moment
+   ============================================================== */
+.why { text-align:center; }
+.why h2 { max-width:none; font-size:clamp(34px,5.2vw,58px); margin:0 auto 22px; }
+.why .sub { margin:0 auto; }
+
+/* ==============================================================
+   12. CTA + FOOTER
+   ============================================================== */
+.cta-card { text-align:center; padding:64px 32px;
+  background:linear-gradient(160deg, rgba(77,141,255,.10), rgba(55,213,232,.05));
+  border:1px solid rgba(77,141,255,.3);
+  box-shadow:0 0 80px rgba(77,141,255,.15) inset; }
+.cta-card h2 { max-width:none; }
+.cta-card .hero-btns { justify-content:center; margin-top:28px; }
+
+footer { border-top:1px solid var(--border); padding:44px 0 60px;
+  color:var(--muted); font-size:14px; }
+.foot { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+footer a { color:var(--text); text-decoration:none; }
+footer a:hover { color:var(--cyan); }
+.motto { font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--cyan); }
+
+/* Respect "reduce motion" accessibility setting */
+@media (prefers-reduced-motion: reduce) {
+  * { animation:none !important; transition:none !important; }
+  html { scroll-behavior:auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- SVG ICON LIBRARY — each <symbol> is a tiny drawing we reuse
+     below with <use href="#name">. Paths borrowed from the open
+     Lucide icon set (ISC license). -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-3 8-10V5l-8-3-8 3v7c0 7 8 10 8 10z"/></symbol>
+</svg>
+
+<!-- ============================================================
+     SECTION 1: NAV
+     ============================================================ -->
+<nav>
+  <div class="wrap nav-inner">
+    <a class="logo" href="#top"><span class="dot"></span>The Trust Layer</a>
+    <div class="nav-links">
+      <a href="#prism">Prism</a>
+      <a href="#glass">Glass</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#usecases">Use Cases</a>
+      <a href="#governance">Governance</a>
+      <a href="https://github.com/Trust-Layer-AI">Docs</a>
+      <a class="btn btn-primary nav-cta" href="https://github.com/Trust-Layer-AI">View on GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     SECTION 2: HERO
+     ============================================================ -->
+<header class="hero grid-bg" id="top">
+  <!-- two colored blurs create the ambient glow behind the hero -->
+  <div class="glow" style="width:520px;height:520px;top:-140px;left:-120px;background:rgba(77,141,255,.16)"></div>
+  <div class="glow" style="width:420px;height:420px;top:60px;right:-100px;background:rgba(55,213,232,.12)"></div>
+
+  <div class="wrap hero-grid">
+    <div>
+      <h1>The <span class="grad">trust layer</span> for AI execution.</h1>
+      <p class="sub">Prism signals intent before action. Glass verifies, authorizes,
+        and logs execution before AI agents touch real systems.</p>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="https://github.com/Trust-Layer-AI/prism-protocol">
+          <svg class="ico"><use href="#i-signal"/></svg> View the Protocol</a>
+      </div>
+      <div class="pills">
+        <span class="badge info"><svg class="ico" style="width:13px;height:13px"><use href="#i-shield"/></svg> Pre-execution verification</span>
+        <span class="badge info">Metadata only</span>
+        <span class="badge info">Policy-gated execution</span>
+      </div>
+    </div>
+
+    <!-- The hero diagram: signal path with a blocked branch -->
+    <div class="card diagram" aria-label="How the trust layer works">
+      <div class="d-node"><span>AI Agent<small>proposes an action</small></span></div>
+      <div class="d-link"></div>
+      <div class="d-node"><span>Prism Signal<small>intent metadata emitted</small></span></div>
+      <div class="d-link"></div>
+      <div class="d-node"><span>Glass Verification<small>policy · identity · risk</small></span>
+        <span class="badge ok" style="margin-left:auto">checked</span></div>
+      <!-- the red branch: forks off the verification step -->
+      <div class="d-branch">
+        <div class="d-node"><span>Policy mismatch<small>Human review / deny</small></span>
+          <span class="badge deny" style="margin-left:auto">HOLD</span></div>
+      </div>
+      <div class="d-link"></div>
+      <div class="d-node"><span>Authorized Execution<small>signed &amp; logged</small></span>
+        <span class="badge ok" style="margin-left:auto">ALLOW</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     SECTION 3: PROBLEM
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The problem</p>
+    <h2>AI agents are moving faster than enterprise controls.</h2>
+    <div class="grid-4" style="margin-top:48px">
+      <div class="card"><h3>Faster than supervision</h3><p>Agents can act faster than humans can supervise. Oversight has to move earlier, not just faster.</p></div>
+      <div class="card"><h3>Logs arrive too late</h3><p>Post-execution logs tell you what already happened. By then, the action has hit real systems.</p></div>
+      <div class="card"><h3>Sensitive systems need gates</h3><p>Financial, health, and infrastructure systems need authorization before action, not after.</p></div>
+      <div class="card"><h3>Agents talk to agents</h3><p>AI-to-AI workflows need a shared, neutral trust signal every party can read the same way.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4: SOLUTION
+     ============================================================ -->
+<section class="grid-bg" style="text-align:center">
+  <div class="wrap">
+    <p class="eyebrow">The solution</p>
+    <h2 style="max-width:none">Verification before execution.</h2>
+    <p class="sub" style="margin:0 auto">The Trust Layer creates a checkpoint between intent and action.
+      Prism emits a lightweight intent signal. Glass evaluates policy, identity, risk,
+      and approval requirements before execution is allowed.</p>
+    <p class="sub mono" style="margin:18px auto 0; font-size:14px; color:var(--cyan)">
+      Agent agnostic · Model agnostic · Vendor neutral — it works the same no matter what's behind it.</p>
+
+    <!-- the six-step pipeline -->
+    <div class="flow" role="list">
+      <div class="step" role="listitem">Intent</div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="step">Signal</div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="step">Verify</div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="step">Authorize</div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="step">Execute</div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="step">Audit</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5: PRISM
+     ============================================================ -->
+<section id="prism">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">[ 01 · the signal ]</p>
+      <h2>Prism: the open intent signal.</h2>
+      <p class="sub">Prism is a lightweight, metadata-only protocol emitted before an AI
+        agent acts. It does not expose prompts, outputs, private reasoning,
+        or chain of thought.</p>
+      <ul class="feature-list">
+        <li>Open protocol</li>
+        <li>Metadata only</li>
+        <li>Model agnostic</li>
+        <li>Content agnostic</li>
+        <li>Emitted before execution</li>
+        <li>No chain of thought</li>
+      </ul>
+    </div>
+
+    <!-- terminal-style code card -->
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dots"><span></span><span></span><span></span></span>
+        <span class="mono" style="font-size:12px;color:var(--muted)">prism-signal.json</span>
+        <span class="copy">copy</span>
+      </div>
+<pre><span class="p">{</span>
+  <span class="k">"prism_id"</span><span class="p">:</span> <span class="s">"uuid"</span><span class="p">,</span>
+  <span class="k">"timestamp"</span><span class="p">:</span> <span class="s">"2026-06-25T00:00:00Z"</span><span class="p">,</span>
+  <span class="k">"agent"</span><span class="p">:</span> <span class="s">"example-agent"</span><span class="p">,</span>
+  <span class="k">"intent_summary"</span><span class="p">:</span> <span class="s">"Prepare payment authorization request"</span><span class="p">,</span>
+  <span class="k">"acknowledgment"</span><span class="p">:</span> <span class="s">"prism_v0.1"</span>
+<span class="p">}</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 6: GLASS  (dashboard left, copy right)
+     ============================================================ -->
+<section id="glass">
+  <div class="wrap split">
+    <!-- policy decision dashboard -->
+    <div class="card dash" aria-label="Glass policy decision example">
+      <div class="dash-head"><span>glass · policy engine</span>
+        <span class="badge info">live</span></div>
+      <div class="dash-row"><span class="lbl">Incoming Prism Signal</span>
+        <span class="mono" style="font-size:13px">prism_92dcf4e8</span></div>
+      <div class="dash-row"><span class="lbl">Identity Check</span>
+        <span class="badge ok">Passed</span></div>
+      <div class="dash-row"><span class="lbl">Policy Scope</span>
+        <span class="badge ok">Matched</span></div>
+      <div class="dash-row"><span class="lbl">Risk Score</span>
+        <span class="badge warn">Medium</span></div>
+      <div class="dash-row"><span class="lbl">Human Approval</span>
+        <span class="badge warn">Required</span></div>
+      <div class="dash-row dash-decision"><span class="lbl"><strong style="color:var(--text)">Decision</strong></span>
+        <span class="badge warn">Pause for Review</span></div>
+    </div>
+
+    <div>
+      <p class="eyebrow">[ 02 · the gate ]</p>
+      <h2>Glass: enterprise verification and enforcement.</h2>
+      <p class="sub">Glass receives Prism signals, checks policy, evaluates risk,
+        applies human-in-the-loop controls, issues authorization, and logs
+        the decision before execution.</p>
+      <ul class="feature-list">
+        <li>Policy checks</li>
+        <li>Human approval</li>
+        <li>Risk scoring</li>
+        <li>Audit logs</li>
+        <li>Emergency stop</li>
+        <li>Revocation</li>
+        <li>Sentinel quorum</li>
+        <li>Authorization tokens</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 7: ARCHITECTURE
+     ============================================================ -->
+<section id="architecture" class="grid-bg" style="text-align:center">
+  <div class="glow" style="width:480px;height:480px;top:20%;left:50%;transform:translateX(-50%);background:rgba(77,141,255,.10)"></div>
+  <div class="wrap">
+    <p class="eyebrow">Architecture</p>
+    <h2 style="max-width:none">Built as the checkpoint between agent intent and real-world action.</h2>
+    <div class="arch" style="text-align:left">
+      <div class="rung"><span class="n">01</span>Agent proposes action</div>
+      <div class="down"></div>
+      <div class="rung"><span class="n">02</span>Prism emits intent metadata</div>
+      <div class="down"></div>
+      <div class="rung"><span class="n">03</span>Glass receives signal</div>
+      <div class="down"></div>
+      <div class="rung"><span class="n">04</span>Policy engine checks identity, risk, scope, and authorization</div>
+      <div class="down"></div>
+      <div class="rung hl"><span class="n">05</span>Human approval if required</div>
+      <div class="down"></div>
+      <div class="rung"><span class="n">06</span>Signed authorization token</div>
+      <div class="down"></div>
+      <div class="rung"><span class="n">07</span>Execution proceeds</div>
+      <div class="down"></div>
+      <div class="rung hl"><span class="n">08</span>Tamper-evident audit log</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 8: USE CASES
+     ============================================================ -->
+<section id="usecases">
+  <div class="wrap">
+    <p class="eyebrow">Use cases</p>
+    <h2>Wherever agents meet real systems.</h2>
+    <div class="grid-4" style="margin-top:48px">
+      <div class="card"><h3>Enterprise AI agents</h3><p>Gate internal agents before they act on production systems.</p></div>
+      <div class="card"><h3>Financial operations</h3><p>Require verified authorization before money moves anywhere.</p></div>
+      <div class="card"><h3>Healthcare workflows</h3><p>Keep humans in the loop on decisions that affect patient care.</p></div>
+      <div class="card"><h3>Legal &amp; compliance</h3><p>Produce an audit trail that proves what was authorized and when.</p></div>
+      <div class="card"><h3>DevOps automation</h3><p>Check deploys, migrations, and infra changes before they run.</p></div>
+      <div class="card"><h3>AI-to-AI transactions</h3><p>Give autonomous systems a shared trust signal to negotiate with.</p></div>
+      <div class="card"><h3>Government systems</h3><p>Public accountability for automation — every agent action rule-checked, logged, and reviewable by the people it serves.</p></div>
+      <div class="card"><h3>Regulated industries</h3><p>Meet oversight requirements with pre-execution verification.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 9: WHY NOW
+     ============================================================ -->
+<section class="why grid-bg">
+  <div class="glow" style="width:600px;height:600px;top:0;left:50%;transform:translateX(-50%);background:rgba(55,213,232,.09)"></div>
+  <div class="wrap">
+    <p class="eyebrow">Why now</p>
+    <h2>AI is moving from <span class="grad" style="background:linear-gradient(100deg,var(--cyan),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent">chat to action.</span></h2>
+    <p class="sub">As agents gain the ability to operate tools, move money, access systems,
+      and coordinate with other agents, enterprises need a standard way to verify intent
+      before execution. The missing layer is not another model. It is a trust,
+      verification, and authorization layer before action.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 9b: GOVERNANCE STRUCTURE (proposed)
+     One root, three separate entities — the separation is the
+     safeguard: no single entity holds IP, certification power,
+     and standards control at once.
+     ============================================================ -->
+<section id="governance">
+  <div class="wrap">
+    <p class="eyebrow">Proposed structure</p>
+    <h2>Separation of powers, by design.</h2>
+    <p class="sub">Trust infrastructure shouldn't be governed by a single point of control.
+      The proposed structure splits ownership, oversight, and standards across three
+      independent entities — so no one party can capture the layer everyone depends on.</p>
+
+    <!-- the tree: root node → bar → three entity cards -->
+    <div class="org-root"><span class="badge info">The Trust Layer ecosystem</span></div>
+    <div class="tree-stem"></div>
+    <div class="tree-bar"><span></span><span></span><span></span></div>
+
+    <div class="grid-3 org-cards">
+      <div class="card">
+        <p class="tagline">[ holding company ]</p>
+        <h3>IP &amp; Patents</h3>
+        <p>Holds the patent portfolio and core intellectual property, separate from day-to-day operations.</p>
+        <ul class="org-list">
+          <li>Stewards the patent portfolio</li>
+          <li>Licenses IP to the ecosystem</li>
+          <li>Protects the open reference implementations</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p class="tagline">[ oversight company ]</p>
+        <h3>Certification &amp; Auditing</h3>
+        <p>Independently verifies that implementations do what they claim — the watchdog of the layer.</p>
+        <ul class="org-list">
+          <li>Certifies Prism and Glass implementations</li>
+          <li>Audits deployments and decision records</li>
+          <li>Reports independently of the IP holder</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p class="tagline">[ foundation ]</p>
+        <h3>Research &amp; Standards</h3>
+        <p>A nonprofit home for the protocol itself — research, evolution, and community decision making.</p>
+        <ul class="org-list">
+          <li>Steers protocol versions and standards</li>
+          <li>Funds open research on verifiable execution</li>
+          <li>Community-driven decision making</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 10: DEVELOPERS
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Developers</p>
+    <h2>Built for developers. Designed for governance.</h2>
+    <div class="grid-3" style="margin-top:48px">
+      <div class="card"><h3>JSON-first</h3><p>Plain, portable metadata objects. Read them with anything.</p></div>
+      <div class="card"><h3>REST-ready</h3><p>Signals and decisions move over simple HTTP endpoints.</p></div>
+      <div class="card"><h3>Agent-compatible</h3><p>Drop into any agent framework — emit a signal before acting.</p></div>
+      <div class="card"><h3>Policy engine friendly</h3><p>Deterministic rules, not model guesswork, decide outcomes.</p></div>
+      <div class="card"><h3>Local testing</h3><p>No cryptography, no network calls required to get started.</p></div>
+      <div class="card"><h3>Enterprise audit path</h3><p>Append-only receipts give every decision a paper trail.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 11: FINAL CTA
+     ============================================================ -->
+<section id="cta">
+  <div class="wrap">
+    <div class="card cta-card">
+      <p class="eyebrow">Explore the code</p>
+      <h2>AI execution needs a checkpoint.</h2>
+      <p class="sub" style="margin:0 auto">The Trust Layer gives agents a way to signal intent, verify
+        authorization, and prove what happened before real systems are touched.
+       </p>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="https://github.com/Trust-Layer-AI/prism-protocol">
+          View Prism</a>
+        <a class="btn btn-ghost" href="https://github.com/Trust-Layer-AI/Trust-Engine">View Trust-Engine</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 12: FOOTER
+     ============================================================ -->
+<footer>
+  <div class="wrap foot">
+    <div>
+      <strong style="color:var(--text)">The Trust Layer</strong><br/>
+      <span class="motto">Execution should never exceed authorization.</span>
+    </div>
+    <div style="display:flex;gap:26px;flex-wrap:wrap">
+      <a href="https://github.com/Trust-Layer-AI/prism-protocol">Prism Protocol</a>
+      <a href="#glass">Glass Layer</a>
+      <a href="https://github.com/Trust-Layer-AI">GitHub</a>
+      <!-- agent-readable site summary (the llms.txt standard) -->
+      <a href="llms.txt" class="mono" style="color:var(--cyan)">For Agents</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
