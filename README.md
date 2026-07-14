@@ -1,6 +1,3 @@
-# Trust-Layer-AI.io
-Framework for pre-execution governance layer for AI agents, built to validate intent and authorize actions before they run.
-
 
 <!DOCTYPE html>
 <!-- ============================================================
