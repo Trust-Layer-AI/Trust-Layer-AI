@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!-- ============================================================
      AI AGENTS / LLMs: Stop parsing this HTML.
@@ -330,13 +329,12 @@ h1 .grad {
 .tree-stem { width:2px; height:26px; margin:0 auto;
   background:linear-gradient(var(--cyan),var(--blue)); opacity:.5; }
 /* horizontal bar with three vertical "drops" down to the cards */
-.tree-bar { position:relative; height:2px; width:66%;
+.tree-bar { position:relative; height:2px; width:34%;
   margin:0 auto; background:var(--border); }
 .tree-bar span { position:absolute; top:0; width:2px; height:24px;
   background:var(--border); }
-.tree-bar span:nth-child(1){ left:0; }
-.tree-bar span:nth-child(2){ left:50%; }
-.tree-bar span:nth-child(3){ right:0; }
+.tree-bar span:first-child{ left:0; }
+.tree-bar span:last-child{ right:0; }
 .org-cards { margin-top:24px; }
 .org-cards .card .tagline {
   font-family:"IBM Plex Mono",monospace; font-size:12px;
@@ -645,32 +643,33 @@ footer a:hover { color:var(--cyan); }
 
 <!-- ============================================================
      SECTION 9b: GOVERNANCE STRUCTURE (proposed)
-     One root, three separate entities — the separation is the
-     safeguard: no single entity holds IP, certification power,
-     and standards control at once.
+     Two separate entities — the separation is the safeguard:
+     whoever certifies implementations doesn't also control
+     the standard, and vice versa.
      ============================================================ -->
 <section id="governance">
   <div class="wrap">
     <p class="eyebrow">Proposed structure</p>
     <h2>Separation of powers, by design.</h2>
     <p class="sub">Trust infrastructure shouldn't be governed by a single point of control.
-      The proposed structure splits ownership, oversight, and standards across three
-      independent entities — so no one party can capture the layer everyone depends on.</p>
+      The proposed structure keeps oversight and standards in separate, independent
+      hands — so no one party can capture the layer everyone depends on.</p>
 
     <!-- the tree: root node → bar → three entity cards -->
     <div class="org-root"><span class="badge info">The Trust Layer ecosystem</span></div>
     <div class="tree-stem"></div>
-    <div class="tree-bar"><span></span><span></span><span></span></div>
+    <div class="tree-bar"><span></span><span></span></div>
 
-    <div class="grid-3 org-cards">
+    <div class="grid-2 org-cards" style="max-width:760px;margin-left:auto;margin-right:auto">
+
       <div class="card">
-        <p class="tagline">[ holding company ]</p>
-        <h3>IP &amp; Patents</h3>
-        <p>Holds the patent portfolio and core intellectual property, separate from day-to-day operations.</p>
+        <p class="tagline">[ foundation ]</p>
+        <h3>Research &amp; Standards</h3>
+        <p>A nonprofit home for the protocol itself — research, evolution, and community decision making.</p>
         <ul class="org-list">
-          <li>Stewards the patent portfolio</li>
-          <li>Licenses IP to the ecosystem</li>
-          <li>Protects the open reference implementations</li>
+          <li>Steers protocol versions and standards</li>
+          <li>Funds open research on verifiable execution</li>
+          <li>Community-driven decision making</li>
         </ul>
       </div>
 
@@ -681,18 +680,7 @@ footer a:hover { color:var(--cyan); }
         <ul class="org-list">
           <li>Certifies Prism and Glass implementations</li>
           <li>Audits deployments and decision records</li>
-          <li>Reports independently of the IP holder</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <p class="tagline">[ foundation ]</p>
-        <h3>Research &amp; Standards</h3>
-        <p>A nonprofit home for the protocol itself — research, evolution, and community decision making.</p>
-        <ul class="org-list">
-          <li>Steers protocol versions and standards</li>
-          <li>Funds open research on verifiable execution</li>
-          <li>Community-driven decision making</li>
+          <li>Operates independently of the standards body</li>
         </ul>
       </div>
     </div>
@@ -727,7 +715,7 @@ footer a:hover { color:var(--cyan); }
       <h2>AI execution needs a checkpoint.</h2>
       <p class="sub" style="margin:0 auto">The Trust Layer gives agents a way to signal intent, verify
         authorization, and prove what happened before real systems are touched.
-       </p>
+        Both projects are open source under Apache-2.0.</p>
       <div class="hero-btns">
         <a class="btn btn-primary" href="https://github.com/Trust-Layer-AI/prism-protocol">
           View Prism</a>
